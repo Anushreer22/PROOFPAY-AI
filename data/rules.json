@@ -1,40 +1,95 @@
+
 {
   "rules": [
     {
       "key": "payment_deadline",
       "value": 45,
       "unit": "days",
-      "legal_reference": "MSMED Act, 2006, Section 15",
-      "source_url": "https://www.indiacode.nic.in/",
-      "date_checked": null,
-      "verification_status": "unverified"
+      "legal_reference": "MSMED Act 2006, Section 15",
+      "source_url": "https://www.indiacode.nic.in/bitstream/123456789/5872/1/a2006-27.pdf",
+      "date_checked": "2026-10-23",
+      "verification_status": "verified",
+      "explanation": "The written agreed payment period cannot exceed 45 days from acceptance or deemed acceptance. Confirm case applicability."
     },
     {
       "key": "default_period",
-      "value": null,
+      "value": 15,
       "unit": "days",
-      "legal_reference": "MSMED Act, 2006, Section 2(b)",
-      "source_url": "https://www.indiacode.nic.in/",
-      "date_checked": null,
-      "verification_status": "unverified"
+      "legal_reference": "MSMED Act 2006, Section 2(b)",
+      "source_url": "https://www.indiacode.nic.in/bitstream/123456789/5872/1/a2006-27.pdf",
+      "date_checked": "2026-10-23",
+      "verification_status": "verified",
+      "explanation": "The appointed day is the day immediately after the 15-day period from acceptance or deemed acceptance."
+    },
+    {
+      "key": "deemed_acceptance",
+      "value": 15,
+      "unit": "days",
+      "legal_reference": "MSMED Act 2006, Section 2(b)",
+      "source_url": "https://www.indiacode.nic.in/bitstream/123456789/5872/1/a2006-27.pdf",
+      "date_checked": "2026-10-23",
+      "verification_status": "verified",
+      "explanation": "If no written objection is made within 15 days of delivery or service, the actual delivery or service date is deemed the acceptance date."
     },
     {
       "key": "interest_multiplier",
       "value": 3,
       "unit": "times_bank_rate",
-      "legal_reference": "MSMED Act, 2006, Section 16",
-      "source_url": "https://www.indiacode.nic.in/",
+      "legal_reference": "MSMED Act 2006, Section 16",
+      "source_url": "https://www.indiacode.nic.in/bitstream/123456789/5872/1/a2006-27.pdf",
+      "date_checked": "2026-10-23",
+      "verification_status": "verified",
+      "explanation": "Interest is at three times the bank rate notified by RBI, subject to case applicability."
+    },
+    {
+      "key": "interest_compounding",
+      "value": null,
+      "unit": "monthly rests",
+      "legal_reference": "MSMED Act 2006, Section 16",
+      "source_url": "https://www.indiacode.nic.in/bitstream/123456789/5872/1/a2006-27.pdf",
+      "date_checked": "2026-10-23",
+      "verification_status": "verified",
+      "explanation": "The Act specifies compound interest with monthly rests. Calculation implementation requires a validated method."
+    },
+    {
+      "key": "enterprise_classification",
+      "value": null,
+      "unit": null,
+      "legal_reference": "MSME notification S.O. 2119(E), 26 June 2020",
+      "source_url": "https://udyamregistration.gov.in/docs/220191.pdf",
+      "date_checked": "2026-10-23",
+      "verification_status": "verified",
+      "explanation": "Classification depends on investment and turnover criteria. Apply the notification and subsequent amendments relevant to the case."
+    },
+    {
+      "key": "udyam_requirement",
+      "value": null,
+      "unit": null,
+      "legal_reference": "MSMED Act 2006, Sections 2(n) and 8, and applicable notifications",
+      "source_url": "https://udyamregistration.gov.in/",
       "date_checked": null,
-      "verification_status": "unverified"
+      "verification_status": "unverified",
+      "explanation": "Verify supplier eligibility and registration requirements for this particular delayed-payment workflow."
+    },
+    {
+      "key": "registration_timing",
+      "value": null,
+      "unit": null,
+      "legal_reference": "Applicable MSMED legislation and notifications",
+      "source_url": "https://udyamregistration.gov.in/",
+      "date_checked": null,
+      "verification_status": "unverified",
+      "explanation": "Verify the registration-timing rule and its applicability before accepting a case."
     },
     {
       "key": "rbi_bank_rate",
       "value": null,
       "unit": "percent_per_annum",
-      "legal_reference": "RBI-notified bank rate",
+      "legal_reference": "RBI-notified bank rate applicable to Section 16",
       "source_url": "https://www.rbi.org.in/",
       "date_checked": null,
-      "verification_status": "unverified"
+      "verification_status": "unverified",
+      "explanation": "Confirm the applicable bank rate and effective date from an authoritative RBI source before calculating interest."
     }
   ]
 }
