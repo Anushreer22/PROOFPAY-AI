@@ -1,0 +1,40 @@
+{
+  "rules": [
+    {
+      "key": "payment_deadline",
+      "value": 45,
+      "unit": "days",
+      "legal_reference": "MSMED Act, 2006, Section 15",
+      "source_url": "https://www.indiacode.nic.in/",
+      "date_checked": null,
+      "verification_status": "unverified"
+    },
+    {
+      "key": "default_period",
+      "value": null,
+      "unit": "days",
+      "legal_reference": "MSMED Act, 2006, Section 2(b)",
+      "source_url": "https://www.indiacode.nic.in/",
+      "date_checked": null,
+      "verification_status": "unverified"
+    },
+    {
+      "key": "interest_multiplier",
+      "value": 3,
+      "unit": "times_bank_rate",
+      "legal_reference": "MSMED Act, 2006, Section 16",
+      "source_url": "https://www.indiacode.nic.in/",
+      "date_checked": null,
+      "verification_status": "unverified"
+    },
+    {
+      "key": "rbi_bank_rate",
+      "value": null,
+      "unit": "percent_per_annum",
+      "legal_reference": "RBI-notified bank rate",
+      "source_url": "https://www.rbi.org.in/",
+      "date_checked": null,
+      "verification_status": "unverified"
+    }
+  ]
+}

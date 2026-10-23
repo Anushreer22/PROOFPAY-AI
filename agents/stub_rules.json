@@ -1,0 +1,16 @@
+{
+  "rules": [
+    {
+      "key": "payment_deadline",
+      "value": 45,
+      "unit": "days",
+      "verification_status": "unverified"
+    },
+    {
+      "key": "interest_multiplier",
+      "value": 3,
+      "unit": "times_bank_rate",
+      "verification_status": "unverified"
+    }
+  ]
+}
