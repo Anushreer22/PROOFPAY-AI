@@ -237,7 +237,24 @@ def _run_pipeline(
     if session.step_keys.get("estimate") == est_key and session.estimate is not None:
         pass
     else:
-        session.estimate = estimate_interest(case, rules=eff_rules)
+        try:
+            session.estimate = estimate_interest(case, rules=eff_rules)
+        except RulesNotVerified as exc:
+            session.stage = "blocked"
+            record_event(
+                session=session,
+                step="estimate",
+                actor="orchestrator",
+                action="refused",
+                inputs=est_inputs,
+                outputs={"error": str(exc), "refusal_reason": "unverified_rule", "routed_to": "human_review"},
+                rules_used=[{"key": exc.key, "source": "unverified"}],
+                approval_status="refused",
+            )
+            return Turn(
+                f"Calculation stopped before computing interest. Rules not verified: {exc}. "
+                "Case routed for human review."
+            )
         session.step_keys["estimate"] = est_key
         rules_used = _extract_rules_used(
             eff_rules,
@@ -544,8 +561,18 @@ def handle_turn(
             )
         except RulesNotVerified as exc:
             session.stage = "blocked"
+            record_event(
+                session=session,
+                step="eligibility",
+                actor="orchestrator",
+                action="refused",
+                inputs={"registered": registered, "class": klass, "activity": activity, "nic": nic},
+                outputs={"error": str(exc), "refusal_reason": "unverified_rule", "routed_to": "human_review"},
+                rules_used=[{"key": exc.key, "source": "unverified"}],
+                approval_status="refused",
+            )
             return session, Turn(
-                f"Stopped before calculations. Rules not verified: {exc}."
+                f"Stopped before calculations. Rules not verified: {exc}. Case routed for human review."
             )
 
         if not session.eligibility.eligible:

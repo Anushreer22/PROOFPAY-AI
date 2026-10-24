@@ -150,3 +150,99 @@ def test_complete_state_machine_workflow():
     assert session.estimate.interest > 0
     assert len(session.drafts) > 0
 
+
+def test_state_machine_refusal_on_unverified_rule():
+    """Requirement 3: Test refusal stops processing, routes to human review, and logs to audit trail."""
+    session = Session()  # Uses data/rules.json where eligible_activities is unverified
+    session, turn1 = handle_turn(session, "hi")
+    assert session.stage == "eligibility"
+
+    session, turn2 = handle_turn(
+        session,
+        '{"action":"eligibility","registered":"yes","enterprise_class":"micro","activity":"manufacturing"}',
+    )
+    assert session.stage == "blocked"
+    assert "Stopped before calculations" in turn2.text
+    assert "Rules not verified: Rule 'eligible_activities' is null or not verified." in turn2.text
+    assert "Case routed for human review." in turn2.text
+    assert session.estimate is None
+    assert len(session.drafts) == 0
+
+    # Audit trail check
+    refusal_events = [e for e in session.audit_events if e["step"] == "eligibility" and e["action"] == "refused"]
+    assert len(refusal_events) == 1
+    assert refusal_events[0]["outputs"]["routed_to"] == "human_review"
+    assert refusal_events[0]["approval_status"] == "refused"
+
+
+def test_case1_clean_document_verification():
+    """Requirement 5: Clean case compares evidence and continues without unsupported mismatch."""
+    case = load_case("case1_clean")
+    rec = reconcile_case(case, mode="full")
+    assert rec.matched is True
+    assert rec.evidence_complete is True
+    assert rec.can_draft_payment_reminder is True
+    mismatch_findings = [f for f in rec.findings if "mismatch" in f.code]
+    assert len(mismatch_findings) == 0
+
+
+def test_case2_po_mismatch_document_verification():
+    """Requirement 5: PO mismatch case identifies discrepancy and explains what differs."""
+    case = load_case("case2_po_mismatch")
+    rec = reconcile_case(case, mode="full")
+    assert rec.matched is False
+    codes = {f.code for f in rec.findings}
+    assert "po_qty_mismatch" in codes
+    assert "po_amount_mismatch" in codes
+    # Verify discrepancy explanation is explicit
+    qty_finding = next(f for f in rec.findings if f.code == "po_qty_mismatch")
+    assert "invoice qty 4 vs PO qty 3" in qty_finding.message
+    amt_finding = next(f for f in rec.findings if f.code == "po_amount_mismatch")
+    assert "180000" in amt_finding.message and "240000" in amt_finding.message
+
+
+def test_case3_no_delivery_proof_document_verification():
+    """Requirement 5: Missing delivery proof blocks payment reminder and requests missing documents."""
+    case = load_case("case3_no_delivery_proof")
+    rec = reconcile_case(case, mode="lite")
+    assert rec.evidence_complete is False
+    assert rec.can_draft_payment_reminder is False
+    assert any(f.code == "missing_delivery" for f in rec.findings)
+    # Draft generation must produce document request only, never claim delivery proven
+    drafts = build_drafts(case, estimate_interest(case, rules=TEST_VERIFIED_RULES), rec, rules=TEST_VERIFIED_RULES)
+    assert all(d.kind == "document_request" for d in drafts)
+    for draft in drafts:
+        assert "delivery" in draft.body.lower() or "grn" in draft.body.lower()
+
+
+def test_calculation_independent_verification():
+    """Requirement 4: Verify independent mathematical calculation of compound interest."""
+    calc = Calculator()
+    case = load_case("case1_clean")  # invoice_amount: 180,000, due_date: 2026-07-12
+    # As of 2026-10-20 -> overdue days = 100 days
+    # 100 days // 30 = 3 months; 100 % 30 = 10 days
+    # Annual rate = 3 * 0.0575 = 0.1725; monthly rate = 0.1725 / 12 = 0.014375
+    # Accrued 3 months: 180,000 * ((1 + 0.014375)^3 - 1) = 7874.62
+    # Remainder 10 days: (180,000 + 7874.62) * 0.1725 * 10 / 365 = 887.90
+    # Expected total interest = round(7874.62 + 887.90, 2) = 8762.52
+    estimate = calc.calculate_interest(case, as_of=date(2026, 10, 20), rules=TEST_VERIFIED_RULES)
+    assert estimate.overdue_days == 100
+    assert estimate.interest == 8762.52
+    assert estimate.total == 188762.52
+    assert estimate.label == "Estimate, verify before use"
+
+
+def test_calculation_invalid_input_and_rule_errors():
+    """Requirement 4: Missing invoice date raises ValueError; missing rule file raises FileNotFoundError."""
+    case = load_case("case1_clean")
+    case.invoice_date = None
+    case.delivery_date = None
+    case.accepted_date = None
+    calc = Calculator()
+    with pytest.raises(ValueError, match="invoice_date is required"):
+        calc.calculate_interest(case, rules=TEST_VERIFIED_RULES)
+
+    with pytest.raises(FileNotFoundError):
+        Calculator(rules_path=Path("non_existent_rules.json"))
+
+
