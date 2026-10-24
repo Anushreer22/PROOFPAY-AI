@@ -7,10 +7,65 @@
       "verification_status": "unverified"
     },
     {
+      "key": "default_period",
+      "value": 15,
+      "unit": "days",
+      "verification_status": "unverified"
+    },
+    {
+      "key": "deemed_acceptance",
+      "value": 15,
+      "unit": "days",
+      "verification_status": "unverified"
+    },
+    {
       "key": "interest_multiplier",
       "value": 3,
       "unit": "times_bank_rate",
       "verification_status": "unverified"
+    },
+    {
+      "key": "interest_compounding",
+      "value": "monthly rests",
+      "unit": "monthly rests",
+      "verification_status": "unverified"
+    },
+    {
+      "key": "enterprise_classification",
+      "value": [
+        "micro",
+        "small"
+      ],
+      "unit": null,
+      "verification_status": "unverified"
+    },
+    {
+      "key": "udyam_requirement",
+      "value": true,
+      "unit": null,
+      "verification_status": "unverified"
+    },
+    {
+      "key": "registration_timing",
+      "value": "predates_supply",
+      "unit": null,
+      "verification_status": "unverified"
+    },
+    {
+      "key": "rbi_bank_rate",
+      "value": 5.75,
+      "unit": "percent_per_annum",
+      "verification_status": "unverified"
+    },
+    {
+      "key": "eligible_activities",
+      "value": [
+        "manufacturing",
+        "services"
+      ],
+      "unit": null,
+      "verification_status": "unverified"
     }
   ]
 }
+
